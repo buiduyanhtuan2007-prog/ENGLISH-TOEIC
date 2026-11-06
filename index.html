@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Sổ tay TOEIC</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%230B6E5B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="boot" class="boot">Đang tải…</div>
+
+<!-- Đăng nhập -->
+<main id="authView" class="authwrap" hidden>
+  <div class="authcard">
+    <div class="bubbles" aria-hidden="true"><i>A</i><i class="on">B</i><i>C</i><i>D</i></div>
+    <h1>Sổ tay TOEIC</h1>
+    <p class="sub">Đăng nhập để tiến độ học đi theo bạn trên mọi thiết bị.</p>
+    <div class="seg" role="tablist" aria-label="Chế độ">
+      <button type="button" role="tab" id="mLogin" aria-selected="true">Đăng nhập</button>
+      <button type="button" role="tab" id="mSignup" aria-selected="false">Tạo tài khoản</button>
+    </div>
+    <form id="authForm" novalidate>
+      <div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email" inputmode="email" required></div>
+      <div class="field"><label for="aPass">Mật khẩu (ít nhất 8 ký tự)</label><input id="aPass" type="password" autocomplete="current-password" required></div>
+      <button class="btn pri" id="aSubmit" type="submit">Đăng nhập</button>
+    </form>
+    <button class="link" id="aForgot" type="button">Quên mật khẩu?</button>
+    <p class="msg" id="aMsg" role="status"></p>
+  </div>
+</main>
+
+<!-- Đặt lại mật khẩu (mở từ liên kết trong email) -->
+<main id="recoverView" class="authwrap" hidden>
+  <div class="authcard">
+    <h1>Đặt mật khẩu mới</h1>
+    <form id="recForm" novalidate>
+      <div class="field"><label for="rPass">Mật khẩu mới (ít nhất 8 ký tự)</label><input id="rPass" type="password" autocomplete="new-password" required></div>
+      <button class="btn pri" id="rSubmit" type="submit">Lưu mật khẩu</button>
+    </form>
+    <p class="msg" id="rMsg" role="status"></p>
+  </div>
+</main>
+
+<!-- Ứng dụng -->
+<div id="appView" class="wrap" hidden>
+  <div class="acct">
+    <span class="who" id="acctEmail"></span>
+    <div class="sync" id="sync" data-s="local" role="status"><i></i><span id="syncTxt"></span></div>
+    <button class="btn sm" id="signout" type="button" hidden>Đăng xuất</button>
+  </div>
+  <p class="localnote" id="localnote" hidden>Trang chưa kết nối Supabase nên tiến độ chỉ lưu trên trình duyệt này. Làm theo README để bật đăng nhập.</p>
+
+  <header class="top">
+    <div class="bubbles" aria-hidden="true"><i>A</i><i class="on">B</i><i>C</i><i>D</i></div>
+    <h1>Sổ tay TOEIC</h1>
+    <p>Mỗi ngày một ít: ôn từ vựng theo lịch lặp lại ngắt quãng, 10 câu Part 5 và một bài nghe hoặc đọc.</p>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Các mục">
+    <button type="button" role="tab" id="t-hom-nay" data-v="hom-nay" aria-controls="v-hom-nay" aria-selected="true">Hôm nay</button>
+    <button type="button" role="tab" id="t-tu-vung" data-v="tu-vung" aria-controls="v-tu-vung" aria-selected="false" tabindex="-1">Từ vựng<span class="badge" id="dueBadge" hidden></span></button>
+    <button type="button" role="tab" id="t-luyen-de" data-v="luyen-de" aria-controls="v-luyen-de" aria-selected="false" tabindex="-1">Luyện đề</button>
+    <button type="button" role="tab" id="t-bai-thi" data-v="bai-thi" aria-controls="v-bai-thi" aria-selected="false" tabindex="-1">Bài thi</button>
+  </nav>
+
+  <div class="view" id="v-hom-nay" role="tabpanel" aria-labelledby="t-hom-nay">
+    <section class="stats" aria-label="Tổng quan">
+      <div class="stat"><b id="sStreak">0</b><span>ngày liên tiếp hoàn thành</span></div>
+      <div class="stat"><b id="sDue">0</b><span>thẻ cần ôn hôm nay</span></div>
+      <div class="stat"><b id="sQuiz">–</b><span>điểm Part 5 cao nhất</span></div>
+      <div class="stat"><b id="sToday">0/4</b><span>việc hôm nay</span></div>
+    </section>
+    <div class="cols">
+      <section class="panel">
+        <h2>Việc hôm nay</h2>
+        <p class="sub" id="today"></p>
+        <ul class="todo" id="todo"></ul>
+        <div class="week" id="week" aria-label="7 ngày gần nhất"></div>
+      </section>
+      <div class="side">
+        <section class="panel">
+          <h2>Thẻ từ vựng</h2>
+          <p class="sub" id="goTxt"></p>
+          <button class="btn pri" id="goVocab" type="button">Vào ôn từ vựng</button>
+        </section>
+        <div class="target">
+          <span class="label">Điểm mục tiêu</span>
+          <div class="row"><input id="target" type="number" min="10" max="990" step="5" value="650" aria-label="Điểm TOEIC mục tiêu"><span class="of">/ 990</span></div>
+          <span class="lvl" id="lvl"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="v-tu-vung" role="tabpanel" aria-labelledby="t-tu-vung" hidden>
+    <div class="cols">
+      <section class="panel">
+        <h2>Ôn từ vựng</h2>
+        <p class="sub">Nhìn từ, nhớ nghĩa, lật thẻ rồi chọn mức nhớ. Từ càng nhớ chắc, lần gặp lại càng thưa.</p>
+        <div class="srs" id="srsStats"></div>
+        <button class="card" id="card" type="button" aria-live="polite"></button>
+        <div class="rate" id="rate">
+          <button class="r0" type="button" data-r="0" disabled>Quên<small></small></button>
+          <button class="r1" type="button" data-r="1" disabled>Khó<small></small></button>
+          <button class="r2" type="button" data-r="2" disabled>Tốt<small></small></button>
+          <button class="r3" type="button" data-r="3" disabled>Dễ<small></small></button>
+        </div>
+        <p class="keys">Phím tắt: Space lật thẻ · 1 Quên · 2 Khó · 3 Tốt · 4 Dễ</p>
+      </section>
+      <section class="panel">
+        <h2>Thêm từ của riêng bạn</h2>
+        <p class="sub">Từ mới vào bộ thẻ và xuất hiện ở lượt ôn kế tiếp.</p>
+        <form class="addf" id="addForm" autocomplete="off">
+          <div class="two"><input id="wWord" placeholder="Từ tiếng Anh" aria-label="Từ tiếng Anh" required><input id="wPos" placeholder="loại" aria-label="Loại từ"></div>
+          <input id="wMean" placeholder="Nghĩa tiếng Việt" aria-label="Nghĩa tiếng Việt" required>
+          <input id="wEx" placeholder="Câu ví dụ (không bắt buộc)" aria-label="Câu ví dụ">
+          <div><button class="btn pri" type="submit">Thêm vào bộ thẻ</button></div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <div class="view" id="v-luyen-de" role="tabpanel" aria-labelledby="t-luyen-de" hidden>
+    <section class="panel">
+      <h2>Part 5: Hoàn thành câu</h2>
+      <p class="sub">8 câu ngữ pháp và từ vựng. Chọn đáp án để xem giải thích.</p>
+      <div id="quiz"></div>
+      <div class="row-btns">
+        <span class="score" id="qscore" style="align-self:center"></span>
+        <button class="btn" id="qreset" type="button">Làm lại</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="view" id="v-bai-thi" role="tabpanel" aria-labelledby="t-bai-thi" hidden>
+    <section class="panel">
+      <h2>Cấu trúc bài thi</h2>
+      <p class="sub">200 câu, 2 giờ, thang điểm 10 đến 990. Nghe và Đọc mỗi phần tối đa 495.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Part</th><th>Kỹ năng</th><th>Số câu</th><th>Nội dung</th><th>Mẹo</th></tr></thead>
+          <tbody id="parts"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Thư viện Supabase, ghim một phiên bản cụ thể. Đổi số phiên bản ở đây nếu muốn nâng cấp. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
