@@ -8,6 +8,12 @@ Trang web học TOEIC cá nhân: ôn từ vựng theo lặp lại ngắt quãng,
 
 Làm lần lượt 5 bước dưới đây. Tên các mục trên trang web của GitHub và Supabase có thể khác đôi chút so với mô tả, nhưng ý nghĩa giống nhau.
 
+## Trang có gì
+
+- **Chuỗi ngày (kiểu Duolingo):** chuỗi chỉ tăng khi bạn hoàn thành đủ 4 nhiệm vụ trong ngày. Ôn hết thẻ đến hạn thì nhiệm vụ 1 tự hoàn thành, làm xong Part 5 thì nhiệm vụ 2 tự hoàn thành, hai nhiệm vụ nghe và đọc bạn tự tick. Bỏ lỡ một ngày là chuỗi về 0, và trang báo "nguy cơ mất chuỗi" khi hôm nay còn thiếu nhiệm vụ.
+- **Ôn từ vựng nhiều dạng:** thẻ lật, trắc nghiệm, điền chỗ trống, gõ từ. Ở chế độ Tự động, từ mới học bằng thẻ lật, nhớ chắc dần thì chuyển sang trắc nghiệm, điền chỗ trống, rồi gõ từ. Lịch ôn lặp lại ngắt quãng.
+- **Luyện đề Part 5**, **bảng cấu trúc bài thi**, **điểm mục tiêu**.
+
 ## Thử trước trên máy (không bắt buộc)
 
 Mở file `index.html` bằng trình duyệt. Khi chưa điền cấu hình ở bước 4, trang chạy ở chế độ chỉ lưu trên trình duyệt đó, đủ để xem giao diện và thử ôn từ.
@@ -40,7 +46,7 @@ Mở file `index.html` bằng trình duyệt. Khi chưa điền cấu hình ở 
 1. Trong Supabase, vào **Project Settings > API** (hoặc **API Keys**).
 2. Chép hai giá trị:
    - **Project URL**, dạng `https://xxxx.supabase.co`.
-   - Khóa công khai: **anon public** (hoặc **publishable**).
+   - Khóa công khai: mục **Publishable key**, dòng `default`, bấm biểu tượng sao chép. Khóa bắt đầu bằng `sb_publishable_`. Không chép khóa ở mục **Secret keys**. Project URL nằm ở **Integrations > Data API**, hoặc dạng `https://MÃ-DỰ-ÁN.supabase.co` với mã dự án là đoạn nằm trong thanh địa chỉ của bảng điều khiển.
 3. Trên GitHub, mở file `js/config.js`, bấm biểu tượng bút chì để sửa, dán hai giá trị vào giữa hai dấu ngoặc kép, rồi **Commit changes**.
 
 Hai giá trị này không phải bí mật. Dữ liệu được bảo vệ bởi các quy tắc ở bước 3. **Không bao giờ dán khóa `service_role` vào đây.**
@@ -64,6 +70,8 @@ css/style.css       Giao diện
 js/config.js        Khóa kết nối Supabase (bạn điền)
 js/data.js          Từ vựng, câu Part 5, việc hàng ngày, bảng cấu trúc
 js/srs.js           Thuật toán lặp lại ngắt quãng
+js/logic.js         Chọn kiểu bài, che từ trong câu ví dụ, tính chuỗi ngày
+tests/logic.test.js Kiểm tra tự động cho logic (chạy: node tests/logic.test.js)
 js/store.js         Lưu trên máy và đồng bộ lên Supabase
 js/app.js           Giao diện và đăng nhập
 supabase/schema.sql Bảng dữ liệu và quy tắc bảo mật

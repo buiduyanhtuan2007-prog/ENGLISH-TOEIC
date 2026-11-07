@@ -46,7 +46,7 @@
       ["All employees must wear ID badges while ------ the building.", ["enter", "entered", "entering", "entrance"], 2, "While + V-ing khi rút gọn mệnh đề cùng chủ ngữ."],
       ["Sales increased ------ in the third quarter.", ["significant", "significance", "significantly", "signify"], 2, "Bổ nghĩa cho động từ increased cần trạng từ: significantly."]
     ],
-    TASKS: ["Ôn thẻ từ vựng đến hạn", "Làm 10 câu Part 5", "Nghe 1 đoạn Part 3 hoặc 4", "Đọc 1 bài Part 7"],
+    TASKS: ["Ôn thẻ từ vựng đến hạn", "Làm bài Part 5 (8 câu)", "Nghe 1 đoạn Part 3 hoặc 4", "Đọc 1 bài Part 7"],
     PARTS: [
       ["1", "Nghe", 6, "Mô tả tranh", "Chú ý động từ chỉ hành động và vị trí của đồ vật."],
       ["2", "Nghe", 25, "Hỏi đáp", "Nghe từ để hỏi đầu câu: who, when, where, why, how."],

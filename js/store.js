@@ -6,7 +6,7 @@
   var PREFIX = "toeic-notebook-v1:";
 
   function defaults() {
-    return { target: 650, checks: {}, quizBest: null, cards: {}, custom: [], newDay: 0, newCount: 0, updated: 0 };
+    return { target: 650, checks: {}, quizBest: null, cards: {}, custom: [], newDay: 0, newCount: 0, mode: "auto", updated: 0 };
   }
   function normalize(o) {
     var d = defaults();
