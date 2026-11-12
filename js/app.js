@@ -82,7 +82,17 @@
     b.type = "button";
     b.setAttribute("aria-label", label || "Nghe phát âm");
     b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' + (cls === "big" ? "<span>Nghe</span>" : cls === "slow" ? "<span>Chậm</span>" : "");
-    b.addEventListener("click", function (e) { e.stopPropagation(); tts.speak(text, { lang: S.accent, rate: rate || S.speed }); });
+    b.addEventListener("click", function (e) {
+      e.stopPropagation();
+      b.classList.add("playing");
+      tts.speak(text, {
+        lang: S.accent,
+        rate: rate || S.speed,
+        onend: function () { b.classList.remove("playing"); },
+        onerror: function () { b.classList.remove("playing"); }
+      });
+      setTimeout(function () { b.classList.remove("playing"); }, 2500);
+    });
     return b;
   }
 
@@ -181,17 +191,18 @@
     }
   }
   function burst() {
-    var box = $("confetti"), cols = ["var(--flame)", "var(--flame-2)", "var(--accent)", "var(--ink)"];
+    var box = $("confetti"), cols = ["#F97316", "#FBBF24", "#0D9488", "#2563EB", "#EC4899", "#8B5CF6", "#10B981"];
     box.innerHTML = "";
-    for (var i = 0; i < 24; i++) {
-      var s = el("span"), a = Math.random() * Math.PI * 2, r = 70 + Math.random() * 110;
+    for (var i = 0; i < 36; i++) {
+      var s = el("span"), a = Math.random() * Math.PI * 2, r = 75 + Math.random() * 130;
       s.style.setProperty("--dx", Math.round(Math.cos(a) * r) + "px");
-      s.style.setProperty("--dy", Math.round(Math.sin(a) * r - 40) + "px");
-      s.style.setProperty("--rot", Math.round(Math.random() * 540) + "deg");
+      s.style.setProperty("--dy", Math.round(Math.sin(a) * r - 45) + "px");
+      s.style.setProperty("--rot", Math.round(Math.random() * 720) + "deg");
       s.style.background = cols[i % cols.length];
+      if (i % 2 === 0) { s.style.borderRadius = "50%"; s.style.width = "9px"; s.style.height = "9px"; }
       box.appendChild(s);
     }
-    var f = $("flame"); f.classList.remove("pop"); void f.offsetWidth; f.classList.add("pop");
+    var f = $("flame"); if (f) { f.classList.remove("pop"); void f.offsetWidth; f.classList.add("pop"); }
   }
 
   function renderHome() {
@@ -364,6 +375,11 @@
     var st = $("study"); st.innerHTML = "";
     if (!sess) { go("hom-nay"); return; }
     $("sessTitle").textContent = sess.title;
+    var prog = $("sessProgress");
+    if (prog && sess.total) {
+      var pct = Math.min(100, Math.round(((sess.total - sess.Q.length) / sess.total) * 100));
+      prog.style.width = pct + "%";
+    }
     if (!sess.Q.length) { item = null; $("sessLeft").textContent = ""; $("keys").textContent = ""; drawEnd(st); return; }
     $("sessLeft").textContent = "Còn " + sess.Q.length;
     if (!item || item.e !== sess.Q[0]) item = makeItem(sess.Q[0]);
@@ -383,6 +399,7 @@
   }
 
   function drawEnd(st) {
+    if (sess && sess.total) burst();
     var p = el("div", "prompt end"), nd = nextDue();
     p.appendChild(el("div", "big", sess.total ? "Xong lượt này" : sess.type === "daily" ? "Hôm nay không còn thẻ nào" : "Chưa có thẻ phù hợp"));
     var msg = sess.type === "daily"
@@ -411,6 +428,7 @@
         card.appendChild(el("div", "hint", isNew ? "Từ mới. Chạm hoặc nhấn Space để xem nghĩa" : "Chạm hoặc nhấn Space để lật thẻ"));
       }
     } else {
+      card.classList.add("flipped");
       card.appendChild(el("div", "w", w.w));
       card.appendChild(el("div", "mean", w.vi));
       if (w.ex) card.appendChild(el("div", "ex", w.ex));
@@ -430,7 +448,7 @@
     if (tools.firstChild) st.appendChild(tools);
     st.appendChild(rt);
     if (item.flip) st.appendChild(wordTools(w.id, false));
-    $("keys").textContent = "Phím tắt: Space lật thẻ · 1 Quên · 2 Khó · 3 Tốt · 4 Dễ";
+    $("keys").innerHTML = "<kbd>Space</kbd> lật thẻ · <kbd>1</kbd> Quên · <kbd>2</kbd> Khó · <kbd>3</kbd> Tốt · <kbd>4</kbd> Dễ";
   }
   function ivText(n) { return n <= 1 ? "1 ngày" : n + " ngày"; }
   function rate(r) {
@@ -473,7 +491,7 @@
     });
     st.appendChild(p); st.appendChild(opts);
     if (item.done) drawFeedback(st);
-    $("keys").textContent = item.done ? "Enter sang bài tiếp" : "Phím 1 đến 4 chọn đáp án";
+    $("keys").innerHTML = item.done ? "<kbd>Enter</kbd> sang bài tiếp" : "Phím <kbd>1</kbd> đến <kbd>4</kbd> chọn đáp án";
   }
   function choose(i) {
     if (!item || item.done) return;
@@ -521,7 +539,7 @@
     });
     st.appendChild(p); st.appendChild(f);
     if (item.done) drawFeedback(st); else setTimeout(function () { var i2 = $("tyIn"); if (i2 && !item.done && k !== "dict" && k !== "lcloze") i2.focus(); }, 0);
-    $("keys").textContent = item.done ? "Enter sang bài tiếp" : "Gõ từ rồi nhấn Enter";
+    $("keys").innerHTML = item.done ? "<kbd>Enter</kbd> sang bài tiếp" : "Gõ từ rồi nhấn <kbd>Enter</kbd>";
   }
 
   function finish() {

@@ -31,6 +31,9 @@
       u.rate = opt.rate || 1;
       var v = pick(lang);
       if (v) u.voice = v;
+      if (opt.onend) u.onend = opt.onend;
+      if (opt.onerror) u.onerror = opt.onerror;
+      if (opt.onstart) u.onstart = opt.onstart;
       syn.speak(u);
       return true;
     } catch (e) { return false; }
