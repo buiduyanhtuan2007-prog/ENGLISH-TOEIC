@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>Sổ tay TOEIC</title>
+<title>Sổ tay từ vựng</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%230B6E5B'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
 <main id="authView" class="authwrap" hidden>
   <div class="authcard">
     <div class="bubbles" aria-hidden="true"><i>A</i><i class="on">B</i><i>C</i><i>D</i></div>
-    <h1>Sổ tay TOEIC</h1>
+    <h1>Sổ tay từ vựng</h1>
     <p class="sub">Đăng nhập để tiến độ học đi theo bạn trên mọi thiết bị.</p>
     <div class="seg" role="tablist" aria-label="Chế độ">
       <button type="button" role="tab" id="mLogin" aria-selected="true">Đăng nhập</button>
@@ -58,17 +58,19 @@
 
   <header class="top">
     <div class="bubbles" aria-hidden="true"><i>A</i><i class="on">B</i><i>C</i><i>D</i></div>
-    <h1>Sổ tay TOEIC</h1>
-    <p>Mỗi ngày một ít: ôn từ vựng theo lịch lặp lại ngắt quãng, 10 câu Part 5 và một bài nghe hoặc đọc.</p>
+    <h1>Sổ tay từ vựng</h1>
+    <p>Học từ vựng mỗi ngày bằng lặp lại ngắt quãng. Bộ TOEIC xếp theo mức độ, và bạn tự thêm từ của riêng mình.</p>
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="Các mục">
-    <button type="button" role="tab" id="t-hom-nay" data-v="hom-nay" aria-controls="v-hom-nay" aria-selected="true">Hôm nay</button>
-    <button type="button" role="tab" id="t-tu-vung" data-v="tu-vung" aria-controls="v-tu-vung" aria-selected="false" tabindex="-1">Từ vựng<span class="badge" id="dueBadge" hidden></span></button>
-    <button type="button" role="tab" id="t-luyen-de" data-v="luyen-de" aria-controls="v-luyen-de" aria-selected="false" tabindex="-1">Luyện đề</button>
-    <button type="button" role="tab" id="t-bai-thi" data-v="bai-thi" aria-controls="v-bai-thi" aria-selected="false" tabindex="-1">Bài thi</button>
+    <button type="button" role="tab" id="t-hom-nay" data-v="hom-nay" aria-controls="v-hom-nay" aria-selected="true">Hôm nay<span class="badge" id="dueBadge" hidden></span></button>
+    <button type="button" role="tab" id="t-hoc-them" data-v="hoc-them" aria-controls="v-hoc-them" aria-selected="false" tabindex="-1">Học thêm</button>
+    <button type="button" role="tab" id="t-toeic" data-v="toeic" aria-controls="v-toeic" aria-selected="false" tabindex="-1">Bộ TOEIC</button>
+    <button type="button" role="tab" id="t-cua-toi" data-v="cua-toi" aria-controls="v-cua-toi" aria-selected="false" tabindex="-1">Từ của tôi</button>
+    <button type="button" role="tab" id="t-cai-dat" data-v="cai-dat" aria-controls="v-cai-dat" aria-selected="false" tabindex="-1">Cài đặt</button>
   </nav>
 
+  <!-- Hôm nay -->
   <div class="view" id="v-hom-nay" role="tabpanel" aria-labelledby="t-hom-nay">
     <section class="hero" id="hero" data-state="idle" aria-label="Chuỗi ngày học">
       <div class="flame" id="flame" aria-hidden="true">
@@ -86,7 +88,7 @@
           <circle class="track" cx="32" cy="32" r="26"/>
           <circle class="arc" id="ringArc" cx="32" cy="32" r="26" transform="rotate(-90 32 32)"/>
         </svg>
-        <span id="ringTxt">0/4</span>
+        <span id="ringTxt">0/2</span>
       </div>
       <p class="hint" id="hint" role="status"></p>
       <div class="week" id="week" aria-label="7 ngày gần nhất"></div>
@@ -95,84 +97,168 @@
     </section>
     <section class="stats" aria-label="Tổng quan">
       <div class="stat"><b id="sDue">0</b><span>thẻ cần ôn hôm nay</span></div>
-      <div class="stat"><b id="sKnown">0</b><span>từ đã thuộc</span></div>
-      <div class="stat"><b id="sQuiz">–</b><span>điểm Part 5 cao nhất</span></div>
+      <div class="stat"><b id="sLearned">0</b><span>từ đã học</span></div>
+      <div class="stat"><b id="sKnown">0</b><span>từ đã thuộc chắc</span></div>
     </section>
     <div class="cols">
       <section class="panel">
         <h2>Việc hôm nay</h2>
         <p class="sub" id="today"></p>
         <ul class="todo" id="todo"></ul>
+        <div class="row-btns"><button class="btn pri" id="goStudy" type="button">Bắt đầu học hôm nay</button></div>
       </section>
       <div class="side">
         <section class="panel">
-          <h2>Thẻ từ vựng</h2>
-          <p class="sub" id="goTxt"></p>
-          <button class="btn pri" id="goVocab" type="button">Vào ôn từ vựng</button>
+          <h2>Bộ TOEIC</h2>
+          <p class="sub" id="deckTxt"></p>
+          <div class="bar" aria-hidden="true"><i id="deckBar"></i></div>
+          <p class="mini" id="deckLvl"></p>
         </section>
-        <div class="target">
-          <span class="label">Điểm mục tiêu</span>
-          <div class="row"><input id="target" type="number" min="10" max="990" step="5" value="650" aria-label="Điểm TOEIC mục tiêu"><span class="of">/ 990</span></div>
-          <span class="lvl" id="lvl"></span>
-        </div>
+        <section class="panel" id="leechBox" hidden>
+          <h2>Từ hay quên</h2>
+          <p class="sub" id="leechTxt"></p>
+          <button class="btn" id="goLeech" type="button">Luyện các từ này</button>
+        </section>
       </div>
     </div>
+    <section class="panel" id="statsBox" aria-label="Thống kê">
+      <h2>Thống kê</h2>
+      <p class="sub" id="statsTxt"></p>
+      <div class="charts">
+        <div class="chart">
+          <h3>14 ngày qua</h3>
+          <p class="mini">Số lượt ôn mỗi ngày. Phần đậm là lượt nhớ được.</p>
+          <div class="bars" id="logBars" role="img"></div>
+          <p class="mini" id="logNote"></p>
+        </div>
+        <div class="chart">
+          <h3>7 ngày tới</h3>
+          <p class="mini">Số thẻ sẽ đến hạn mỗi ngày. Thẻ quá hạn tính vào hôm nay.</p>
+          <div class="bars" id="dueBars" role="img"></div>
+          <p class="mini" id="dueNote"></p>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="view" id="v-tu-vung" role="tabpanel" aria-labelledby="t-tu-vung" hidden>
+  <!-- Buổi học (không có tab riêng) -->
+  <div class="view" id="v-hoc" role="region" aria-label="Buổi học" hidden>
+    <section class="panel">
+      <div class="sesshead">
+        <button class="btn sm" id="sessExit" type="button">← Thoát</button>
+        <b id="sessTitle"></b>
+        <span class="score" id="sessLeft"></span>
+      </div>
+      <div class="study" id="study" aria-live="polite"></div>
+      <p class="keys" id="keys"></p>
+    </section>
+  </div>
+
+  <!-- Học thêm -->
+  <div class="view" id="v-hoc-them" role="tabpanel" aria-labelledby="t-hoc-them" hidden>
+    <section class="panel">
+      <h2>Học thêm</h2>
+      <p class="sub">Không giới hạn. Làm xong việc hôm nay bạn vẫn học tiếp được. Các lượt này cũng cập nhật lịch ôn của từng từ.</p>
+      <div class="extras" id="extraList"></div>
+    </section>
+  </div>
+
+  <!-- Bộ TOEIC -->
+  <div class="view" id="v-toeic" role="tabpanel" aria-labelledby="t-toeic" hidden>
+    <section class="panel">
+      <h2>Bộ từ TOEIC</h2>
+      <p class="sub" id="tSummary"></p>
+      <div class="segby" id="toeicBy" role="group" aria-label="Cách xem bộ TOEIC" hidden>
+        <button type="button" data-by="level" aria-pressed="true">Theo mức</button>
+        <button type="button" data-by="topic" aria-pressed="false">Theo chủ đề</button>
+      </div>
+      <input class="search" id="tSearch" type="search" placeholder="Tìm từ hoặc nghĩa" aria-label="Tìm từ trong bộ TOEIC" autocomplete="off">
+      <div id="levels"></div>
+    </section>
+  </div>
+
+  <!-- Từ của tôi -->
+  <div class="view" id="v-cua-toi" role="tabpanel" aria-labelledby="t-cua-toi" hidden>
     <div class="cols">
       <section class="panel">
-        <h2>Ôn từ vựng</h2>
-        <p class="sub">Từ mới học bằng thẻ lật. Nhớ càng chắc, bài càng khó: trắc nghiệm, điền chỗ trống, rồi gõ từ. Lần gặp lại cũng thưa dần.</p>
-        <div class="srs" id="srsStats"></div>
-        <div class="modebar">
-          <label class="label" for="mode">Kiểu ôn</label>
-          <select id="mode">
+        <h2>Thêm một từ</h2>
+        <p class="sub">Cần từ và nghĩa. Loại từ, câu ví dụ và ghi chú gợi nhớ có thể thêm sau.</p>
+        <form class="addf" id="addForm" autocomplete="off">
+          <div class="two"><input id="wWord" placeholder="Từ tiếng Anh" aria-label="Từ tiếng Anh" required><input id="wPos" placeholder="loại" aria-label="Loại từ"></div>
+          <input id="wMean" placeholder="Nghĩa tiếng Việt" aria-label="Nghĩa tiếng Việt" required>
+          <input id="wEx" placeholder="Câu ví dụ (không bắt buộc)" aria-label="Câu ví dụ">
+          <input id="wNote" placeholder="Mẹo nhớ (không bắt buộc)" aria-label="Mẹo nhớ">
+          <div><button class="btn pri" type="submit">Thêm vào bộ thẻ</button></div>
+        </form>
+        <p class="msg" id="addMsg" role="status"></p>
+      </section>
+      <section class="panel">
+        <h2>Dán nhiều từ cùng lúc</h2>
+        <p class="sub">Mỗi dòng một từ. Dạng <code>từ = nghĩa</code> hoặc <code>từ | loại | nghĩa | câu ví dụ</code>.</p>
+        <form class="addf" id="bulkForm">
+          <textarea id="bulk" rows="5" placeholder="budget = ngân sách&#10;launch | v | ra mắt | We will launch the app in May." aria-label="Danh sách từ"></textarea>
+          <div><button class="btn" type="submit">Thêm tất cả</button></div>
+        </form>
+        <p class="msg" id="bulkMsg" role="status"></p>
+      </section>
+    </div>
+    <section class="panel" id="reader">
+      <h2>Đọc và lấy từ</h2>
+      <p class="sub">Dán một đoạn tiếng Anh (bài báo, truyện, email, bài của VOA Learning English…). Bấm vào từ bất kỳ để xem nghĩa. Từ chưa có thì thêm ngay, câu chứa từ đó thành câu ví dụ.</p>
+      <form class="addf" id="rdForm">
+        <textarea id="rdText" rows="5" maxlength="8000" placeholder="Dán đoạn tiếng Anh vào đây (tối đa 8000 ký tự)" aria-label="Đoạn văn tiếng Anh" lang="en"></textarea>
+        <div class="row-btns"><button class="btn pri" type="submit">Đọc đoạn này</button><button class="btn" type="button" id="rdClear">Xóa</button></div>
+      </form>
+      <div id="rdOut" hidden>
+        <p class="mini" id="rdStat"></p>
+        <p class="mini">Gạch chân liền: từ thuộc bộ TOEIC. Gạch chân chấm: từ trong danh sách của bạn.</p>
+        <div class="rdtext" id="rdBody" lang="en"></div>
+        <div class="rdinfo" id="rdInfo" aria-live="polite" hidden></div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Danh sách của bạn <span class="count" id="myCount"></span></h2>
+      <input class="search" id="mySearch" type="search" placeholder="Tìm trong danh sách" aria-label="Tìm trong từ của tôi" autocomplete="off">
+      <div class="words" id="myList"></div>
+    </section>
+  </div>
+
+  <!-- Cài đặt -->
+  <div class="view" id="v-cai-dat" role="tabpanel" aria-labelledby="t-cai-dat" hidden>
+    <section class="panel">
+      <h2>Cài đặt</h2>
+      <div class="settings">
+        <label class="set"><span>Từ mới mỗi ngày</span><input id="setNew" type="number" min="1" max="50" step="1"></label>
+        <label class="set"><span>Bắt đầu học bộ TOEIC từ mức</span>
+          <select id="setLevel"></select></label>
+        <label class="set"><span>Kiểu ôn</span>
+          <select id="setMode">
             <option value="auto">Tự động theo mức nhớ</option>
             <option value="flip">Thẻ lật</option>
             <option value="mc">Trắc nghiệm</option>
             <option value="cloze">Điền chỗ trống</option>
             <option value="type">Gõ từ</option>
-          </select>
-        </div>
-        <div class="study" id="study" aria-live="polite"></div>
-        <p class="keys" id="keys"></p>
-      </section>
-      <section class="panel">
-        <h2>Thêm từ của riêng bạn</h2>
-        <p class="sub">Từ mới vào bộ thẻ và xuất hiện ở lượt ôn kế tiếp.</p>
-        <form class="addf" id="addForm" autocomplete="off">
-          <div class="two"><input id="wWord" placeholder="Từ tiếng Anh" aria-label="Từ tiếng Anh" required><input id="wPos" placeholder="loại" aria-label="Loại từ"></div>
-          <input id="wMean" placeholder="Nghĩa tiếng Việt" aria-label="Nghĩa tiếng Việt" required>
-          <input id="wEx" placeholder="Câu ví dụ (không bắt buộc)" aria-label="Câu ví dụ">
-          <div><button class="btn pri" type="submit">Thêm vào bộ thẻ</button></div>
-        </form>
-      </section>
-    </div>
-  </div>
-
-  <div class="view" id="v-luyen-de" role="tabpanel" aria-labelledby="t-luyen-de" hidden>
-    <section class="panel">
-      <h2>Part 5: Hoàn thành câu</h2>
-      <p class="sub">8 câu ngữ pháp và từ vựng. Chọn đáp án để xem giải thích.</p>
-      <div id="quiz"></div>
-      <div class="row-btns">
-        <span class="score" id="qscore" style="align-self:center"></span>
-        <button class="btn" id="qreset" type="button">Làm lại</button>
+            <option value="listen">Chỉ bài nghe</option>
+          </select></label>
+        <label class="set"><span>Mức nhớ mong muốn</span>
+          <select id="setRet">
+            <option value="0.85">85% (ít lượt ôn hơn)</option>
+            <option value="0.9">90% (cân bằng)</option>
+            <option value="0.95">95% (ôn dày hơn)</option>
+          </select></label>
+        <label class="set chk"><input id="setListen" type="checkbox"><span>Bật bài nghe (nghe chọn nghĩa, nghe gõ từ, nghe câu điền chỗ trống)</span></label>
+        <label class="set chk"><input id="setAuto" type="checkbox"><span>Tự phát âm khi hiện thẻ</span></label>
+        <label class="set"><span>Giọng đọc</span>
+          <select id="setAccent"><option value="en-US">Anh Mỹ</option><option value="en-GB">Anh Anh</option></select></label>
+        <label class="set"><span>Tốc độ đọc</span>
+          <select id="setSpeed"><option value="0.7">Chậm</option><option value="1">Bình thường</option></select></label>
+        <div class="set"><button class="btn" id="testVoice" type="button">Nghe thử giọng đọc</button></div>
+        <p class="mini" id="voiceNote"></p>
       </div>
     </section>
-  </div>
-
-  <div class="view" id="v-bai-thi" role="tabpanel" aria-labelledby="t-bai-thi" hidden>
     <section class="panel">
-      <h2>Cấu trúc bài thi</h2>
-      <p class="sub">200 câu, 2 giờ, thang điểm 10 đến 990. Nghe và Đọc mỗi phần tối đa 495.</p>
-      <div class="scroll">
-        <table>
-          <thead><tr><th>Part</th><th>Kỹ năng</th><th>Số câu</th><th>Nội dung</th><th>Mẹo</th></tr></thead>
-          <tbody id="parts"></tbody>
-        </table>
-      </div>
+      <h2>Nguồn dữ liệu</h2>
+      <p class="sub">Danh sách từ và thứ hạng: <em>TOEIC Service List</em> của Browne, C. và Culligan, B. (newgeneralservicelist.com), giấy phép Creative Commons Attribution-ShareAlike 4.0. Nghĩa tiếng Việt và câu ví dụ do Claude viết cho trang này, có thể có chỗ chưa chuẩn: gặp từ sai thì bấm Sửa ngay trên từ đó. Câu ví dụ không lấy từ đề thi.</p>
     </section>
   </div>
 </div>
@@ -180,9 +266,11 @@
 <!-- Thư viện Supabase, ghim một phiên bản cụ thể. Đổi số phiên bản ở đây nếu muốn nâng cấp. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
-<script src="js/data.js"></script>
+<script src="js/toeic.js"></script>
+<script src="js/toeic_extra.js"></script>
 <script src="js/srs.js"></script>
 <script src="js/logic.js"></script>
+<script src="js/tts.js"></script>
 <script src="js/store.js"></script>
 <script src="js/app.js"></script>
 </body>

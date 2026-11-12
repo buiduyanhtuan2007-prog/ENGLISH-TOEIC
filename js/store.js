@@ -6,15 +6,41 @@
   var PREFIX = "toeic-notebook-v1:";
 
   function defaults() {
-    return { target: 650, checks: {}, quizBest: null, cards: {}, custom: [], newDay: 0, newCount: 0, mode: "auto", updated: 0 };
+    return {
+      checks: {}, cards: {}, custom: [], notes: {}, sentences: {}, edits: {}, log: {},
+      newDay: 0, newCount: 0,
+      mode: "auto", newPerDay: 10, startLevel: 1, listen: true, autoplay: true, accent: "en-US", speed: 1, retention: 0.9,
+      updated: 0
+    };
   }
+  function num(v, a, b, d) { v = Number(v); return isFinite(v) ? Math.min(b, Math.max(a, v)) : d; }
+  function obj(v) { return v && typeof v === "object" && !Array.isArray(v) ? v : {}; }
   function normalize(o) {
     var d = defaults();
     o = o && typeof o === "object" ? o : {};
     for (var k in d) if (o[k] !== undefined && o[k] !== null) d[k] = o[k];
+    d.cards = obj(d.cards); d.checks = obj(d.checks); d.notes = obj(d.notes); d.sentences = obj(d.sentences); d.edits = obj(d.edits);
+    d.log = TN.logic.cleanLog(d.log); // nhật ký ôn mỗi ngày, dùng cho mục Thống kê
+    // từ của bạn: bản cũ lưu dạng mảng [từ, loại, nghĩa, ví dụ]; đổi sang dạng đối tượng và chuyển thẻ sang khóa mới
     if (!Array.isArray(d.custom)) d.custom = [];
-    if (typeof d.cards !== "object" || Array.isArray(d.cards)) d.cards = {};
-    if (typeof d.checks !== "object" || Array.isArray(d.checks)) d.checks = {};
+    d.custom = d.custom.map(function (x) {
+      if (Array.isArray(x)) {
+        var id = "c:" + String(x[0]).toLowerCase();
+        [["", ""], ["|r", "|r"]].forEach(function (s) {
+          var old = String(x[0]).toLowerCase() + s[0];
+          if (d.cards[old] && !d.cards[id + s[1]]) { d.cards[id + s[1]] = d.cards[old]; delete d.cards[old]; }
+        });
+        return { id: id, w: String(x[0]), pos: x[1] || "", vi: x[2] || "", ex: x[3] || "", t: 0 };
+      }
+      return x;
+    }).filter(function (x) { return x && x.id && x.w; });
+    Object.keys(d.cards).forEach(function (k) { d.cards[k] = TN.srs.migrate(d.cards[k]); });
+    d.newPerDay = Math.round(num(d.newPerDay, 1, 50, 10));
+    d.startLevel = Math.round(num(d.startLevel, 1, 5, 1));
+    d.speed = num(d.speed, 0.5, 1.5, 1);
+    d.retention = num(d.retention, 0.7, 0.97, 0.9);
+    d.accent = d.accent === "en-GB" ? "en-GB" : "en-US";
+    d.listen = d.listen !== false; d.autoplay = d.autoplay !== false;
     d.updated = Number(d.updated) || 0;
     return d;
   }
